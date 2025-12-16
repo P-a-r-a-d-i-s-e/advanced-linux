@@ -1,0 +1,69 @@
+#!/bin/bash
+
+help () {
+    echo "
+    Usage: script_location/bldd [OPTIONS]... [DIRECTORY]
+    For the transferred directory, generates a report on all EXECUTABLE ELF files that use shared libraries. 
+    By default, if you do not transfer the directory, the report will be generated for PWD.
+    
+    The report will be generated in a file 'bldd_report.txt', which will be located in PWD.
+    PLEASE NOTE that each time the script is run in the same directory, the report file will be updated completely.
+
+    --help    display this help and exit
+    "
+}
+
+if [[ "$1" == "--help" ]]; then
+    help
+    exit 0
+fi
+
+declare -A arch_lib_file_map
+declare -A arch_lib_file_count_map
+
+DIR="${1:-${PWD}}"
+
+if [[ ! -d "${DIR}" ]]; then
+    echo "Please enter an existing directory."
+    exit 1
+fi
+
+if [[ -f "${PWD}/bldd_report.txt"  ]]; then
+    rm "${PWD}/bldd_report.txt"
+fi
+
+echo "Preparing the report."
+
+while read -r file; do
+    if readelf -a "${file}" | grep -q "Shared library"; then    
+	arch=$(file "${file}" | awk -F, '{sub(/^ */, "", $2); print $2}')
+	while read -r lib; do
+            arch_lib_file_map["${arch}:${lib}"]+="${file}\n"
+	    (( arch_lib_file_count_map["${arch}:${lib}"]++ ))
+        done < <(readelf -a "$file" | grep "Shared library" | grep -oP '\[\K[^]]+(?=])')
+    fi
+done < <(find "${DIR}" -type f -executable -print0 | xargs -0 file | grep -E "ELF.*executable" | awk -F: '{print $1}')
+
+current_arch=""
+
+echo -e "\nReport on dynamic used libraries by ELF executables on ${DIR}" >> "${PWD}/bldd_report.txt"
+
+for key in "${!arch_lib_file_count_map[@]}"; do 
+    IFS=':' read -r arch lib <<< "$key"
+    echo "${arch} ${lib} ${arch_lib_file_count_map[${key}]}"
+done | sort -k1,1 -k3,3nr |
+while read -r arch lib value; do
+    if [[ "${arch}" != "${current_arch}" ]]; then
+	echo -e "\n---------- ${arch} ----------"
+        current_arch="${arch}"
+    fi
+    echo "${lib} (${value} execs)" 
+    echo -e "${arch_lib_file_map["${arch}:${lib}"]}" | while IFS= read -r file; do
+        if [[ -n "${file}" ]]; then
+            echo "          -> ${file}"
+        fi
+    done
+    echo -e "\n"
+done >> "${PWD}/bldd_report.txt"
+
+echo "The report is ready."

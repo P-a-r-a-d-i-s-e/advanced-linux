@@ -1,7 +1,11 @@
-# SQL-Solutions
-### This repository contains solutions to SQL problems from:
+# Advanced Linux
+
+### This repository contains lab reports on the subject Advanced Linux.
+#### Topics of laboratory work:
 ---
-- HackerRank
-- LeetCode
+- ELF files
+- Reverse engineering
+- Loading the system
+- Character Device Driver
 ---
-#### The latest solutions are added to the end of the corresponding .sql files.
+#### A more detailed description can be found in the README of each lab work.

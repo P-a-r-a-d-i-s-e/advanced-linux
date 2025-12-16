@@ -6,6 +6,6 @@
 - ELF files
 - Reverse engineering
 - Loading the system
-- Character Device Driver
+- Character Device Driver (+USB)
 ---
 #### A more detailed description can be found in the README of each lab work.

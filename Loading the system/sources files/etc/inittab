@@ -1,0 +1,5 @@
+::sysinit:/etc/init.d/rc.S
+console::respawn:-/bin/ash
+::restart:/sbin/init
+::ctrlaltdel:/sbin/reboot
+::halt:/bin/umount -a -r

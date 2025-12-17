@@ -1,0 +1,46 @@
+#!/bin/bash
+ 
+#Remove old files
+if [[ -d rootfs ]]; then
+  sudo rm -rf rootfs
+fi
+if [[ -d tmpfs ]]; then
+  rmdir tmpfs
+fi
+
+if [[ -f a9rootfs.ext3 ]]; then
+  rm -f a9rootfs.ext3
+fi
+ 
+#Create new rootfs folder
+sudo mkdir rootfs
+sudo cp /home/paradiseubuntu/lab/Lab3/"busybox-1.36.1"/_install/* rootfs/ -raf
+ 
+#Create folders required by Linux convention
+sudo mkdir -p rootfs/proc/
+sudo mkdir -p rootfs/sys/
+sudo mkdir -p rootfs/tmp/
+sudo mkdir -p rootfs/root/
+sudo mkdir -p rootfs/var/
+sudo mkdir -p rootfs/mnt/
+
+sudo cp /home/paradiseubuntu/lab/Lab3/etc rootfs/ -arf
+
+cd /home/paradiseubuntu/lab/Lab3/"linux-6.17.3"
+sudo make -j2 INSTALL_MOD_PATH=/home/paradiseubuntu/lab/Lab3/rootfs modules_install
+cd /home/paradiseubuntu/lab/Lab3/
+
+#Copy shared libraries to rootfs
+sudo cp -arf /usr/arm-linux-gnueabihf/lib rootfs/
+sudo rm rootfs/lib/*.a
+sudo arm-linux-gnueabihf-strip rootfs/lib/*
+ 
+#Create basic device nodes
+sudo mkdir -p rootfs/dev/
+sudo mknod rootfs/dev/tty1 c 4 1
+sudo mknod rootfs/dev/tty2 c 4 2
+sudo mknod rootfs/dev/tty3 c 4 3
+sudo mknod rootfs/dev/tty4 c 4 4
+sudo mknod rootfs/dev/console c 5 1
+sudo mknod rootfs/dev/ttyAMA0 c 204 64
+sudo mknod rootfs/dev/null c 1 3

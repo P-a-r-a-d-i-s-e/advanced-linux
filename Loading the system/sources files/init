@@ -1,0 +1,17 @@
+#!/bin/busybox sh
+/bin/busybox --install -s /bin
+
+echo "Hello from initramfs!"
+
+mount -t proc none /proc
+mount -t sysfs none /sys
+mount -t devtmpfs none /dev
+
+mdev -s
+
+mount -o ro /dev/mmcblk0p2 /mnt/root
+
+umount /proc /sys
+mount --move /dev /mnt/root/dev
+
+exec switch_root /mnt/root /sbin/init

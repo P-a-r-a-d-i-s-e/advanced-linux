@@ -14,8 +14,10 @@
 ### Solution:
 Для начала накатим [*GHIDRA*](https://github.com/NationalSecurityAgency/ghidra "Go to GHIDRA") и декомпилируем исходное
 приложение. 
+
 *Decompile code (main function):*
 ![decompile code (main function)](screenshots/decompile_code_main_fun.jpg "decompile code main fun")
+
 Как видно на основе CPUID вычисляются две переменные *local_34[7]* и *local_34[8]*, далее из каждой берется по 8 символов в
 шестнадцатеричной системе в врехнем регистре, и все это записывается в PSN, на основе которого уже вычисляется md5 hash
 ('\0' не включается). 
@@ -90,10 +92,13 @@ def compute_license_from_hwid(hwid):
 ```
 Полный код в keygen_license.py.
 #### Launch example:
+
 Запустим приложение:
 ![start hack_app](screenshots/start_hack_app.jpg "start hack_app")
+
 Бросаем HWID нашей keygen_license.py и получаем заветный ключик:
 ![get the key](screenshots/get_key.jpg "get the key")
+
 Вводим полученный ключ и радуемся жизни (второй перезапуск уже не попросил ключа!!):
 ![keygen hack](screenshots/keygen_hack.jpg "keygen hack")
 

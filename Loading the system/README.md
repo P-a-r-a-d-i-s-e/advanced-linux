@@ -313,9 +313,9 @@ qemu-system-arm -M vexpress-a9 -m 512M -kernel u-boot -drive if=sd,driver=file,f
 boot_a_script=load ${devtype} ${devnum}:${distro_bootpart} ${scriptaddr} ${prefix}${script}; source ${scriptaddr}
 ```
 не проинициализирована, иными словами значения переменных devtype, devnum, distro_bootpart, scriptaddr, prefix, script
-не установлены по умолчанию, по крайней мере для весрии U-boot 2025.10. Поэтому мы и получаем данную ошибку. 
+не установлены по умолчанию, по крайней мере для весрии **U-boot 2025.10**. Поэтому мы и получаем данную ошибку. 
 
-Кстати, посмотреть все environment variable можно прописа ```printenv```, а значение конкретной переменной через
+Кстати, посмотреть все environment variable можно прописав ```printenv```, а значение конкретной переменной через
 ```printenv env_name```.
 
 Так как же быть?! Есть несколько вариантов, чтобы задать значения для environment variable в U-boot. 

@@ -105,4 +105,45 @@ def compute_license_from_hwid(hwid):
 
 --- 
 **Patch**
+
+Чтобы создать бинарный патч есть множество путей, пойдем одним из самых простых, а именно просто перепишем значение 
+переменной *local_34[4]* которая проверяется в ```if (local_34[4] == 0)``` с 0 на 1, так как в начале
+она проинициализирована 0 (```local_34[4] = 0```). Таким образом, мы сразу попадем в else if с сообщением 
+об уже активированном приложении, минуя тем самым запрос ключа.
+```C
+else if (local_34[4] == 1) {
+    puts("Your app is licensed to this PC!");
+}
+```
+Всё что нужно это снова воспользоваться [*GHIDRA*](https://github.com/NationalSecurityAgency/ghidra "Go to GHIDRA"), 
+чтобы посмотреть на сколько байт нам нужно оступить, чтобы попасть в нужную строку:
+![local_34[4] offset](screenshots/offset_local_34.jpg "local_34[4] offset")
+
+Так же, чтобы понять сколько байт нужно считать, можно проверить offset следующей строки, т.е., строки
+с функцией *__get_cpuid*:
+![__get_cpuid offset](screenshots/offset_get_cpuid.jpg "__get_cpuid offset")
+
+Как видно, достаточно отступить 5175 байт и считать всего 7, чтобы получить строку ```local_34[4] = 0```, которая 
+имеет вид c7 45 e4 00 00 00 00. Дальше нужно просто заменить 00 00 00 00 на 01 00 00 00 и патч готов.
+Реализация была написана на Java, код можно посмотреть в patch-app/src/com/paradise/patchapp/PatchApp.java.
+#### Launch example:
+
+Запускаем наш PatchApp.java получаем пропатченный hack_app_patch:
+![start patch app](screenshots/start_patch_app.jpg "start patch app")
+
+Проверяем что всё работает:
+![start hack_app_patch](screenshots/hack_app_patch.jpg "start hack_app_patch")
+
+Таким образом, нам удалось полностью отключить лицензирование. 
+
+--- 
 ### Notes:
+Интереса ради можно проверить что мы действительно поменяли только 1 байт, для этого можно выполнить
+команду ```cmp -l``` с флагом ```-l``` и передать ей исходный и пропатченный бинарные файлы.
+Таким образом, мы увидим позицию и отличие в ней:
+![cmp](screenshots/cmp.jpg "cmp")
+
+Как видно, действительно, есть только различие в 1 байт.
+Так же, при помощи все той же [*GHIDRA*](https://github.com/NationalSecurityAgency/ghidra "Go to GHIDRA") можно было бы
+декомпилировать пропатченный бинарь и убедиться, что теперь там стоит ```local_34[4] = 1``` и c7 45 e4 01 00 00 00:
+![decompile code hack_app_patch main fun](screenshots/decompile_code_hack_app_patch_main_fun.jpg "decompile code hack_app_patch main fun")

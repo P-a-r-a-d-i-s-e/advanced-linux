@@ -16,6 +16,7 @@
 приложение. 
 
 *Decompile code (main function):*
+
 ![decompile code (main function)](screenshots/decompile_code_main_fun.jpg "decompile code main fun")
 
 Как видно на основе CPUID вычисляются две переменные *local_34[7]* и *local_34[8]*, далее из каждой берется по 8 символов в
@@ -99,7 +100,7 @@ def compute_license_from_hwid(hwid):
 Бросаем HWID нашей keygen_license.py и получаем заветный ключик:
 ![get the key](screenshots/get_key.jpg "get the key")
 
-Вводим полученный ключ и радуемся жизни (второй перезапуск уже не попросил ключа!!):
+Вводим полученный ключ и радуемся жизни (как видно второй перезапуск уже не просит ключ):
 ![keygen hack](screenshots/keygen_hack.jpg "keygen hack")
 
 --- 

@@ -155,9 +155,10 @@ sudo mknod rootfs/dev/console c 5 1
 sudo mknod rootfs/dev/ttyAMA0 c 204 64
 sudo mknod rootfs/dev/null c 1 3
 ```
-В строке ```sudo cp /home/paradiseubuntu/lab/Lab3/etc rootfs/ -arf``` вы rootfs была скопирована директория etc 
+В строке ```sudo cp /home/paradiseubuntu/lab/Lab3/etc rootfs/ -arf``` в rootfs была скопирована директория etc 
 следующего содержания:
 ![etc](screenshots/etc.jpg "etc")
+
 Её создание можно более подробно посмотреть [*здесь*](https://habr.com/ru/articles/681738/ "Разработка драйвера сетевого адаптера для Linux. Часть 1").
 В целом, можно обойтись и без этого, суть в том, что в /etc/init.d/ лежит скрипт rc.S:
 ```bash
@@ -184,6 +185,7 @@ export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin
 
 В итоге, готовая директория rootfs выглядит как-то так:
 ![rootfs](screenshots/rootfs.jpg "rootfs")
+
 Её содержание, чуть позже, просто целиком и полностью переносится на второй раздел sd карты. 
 
 ---
@@ -239,6 +241,7 @@ sudo mkfs.ext4 -L rootfs /dev/mapper/loopXp2
 В *loopX* вместо X подставляем то значение, которое вернёстся после ```sudo losetup -f --show sdcard.img```.
 Таким образом, после всех манипуляций получаем sdcard.img который выглядит следующим образом:
 ![sdcard](screenshots/sdcard.jpg "sdcard image")
+
 Первый сектор загрузочный туда мы бросаем **zImage** и **dtb**, которые мы получили при сборке ядра, **initramfs.img**, который
 мы уже подготовили, а так же загрузочный скрипт **boot.scr** для U-boot, о котором речь пойдет чуть позже. Во втором же секторе просто размещаем так же
 ранее подготовленный **rootfs**. Ну и не забываем записать в самое начало сам загрузчик u-boot:
@@ -353,5 +356,4 @@ qemu-system-arm -M vexpress-a9 -m 512M -kernel u-boot -drive if=sd,driver=file,f
 **загрузчик → ядро → initramfs → rootfs**.
 
 ### Notes:
-Все исходные файлы, за исключением самих директорий initramfs и rootfs, скрипты и так далее, 
-можно найти в текущем репозитории в папке sources files.
+Директорию etc, скрипт boot.cmd, init, mkrootfs можно найти в текущем репозитории в папке sources files.

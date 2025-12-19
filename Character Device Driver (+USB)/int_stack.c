@@ -138,8 +138,8 @@ static ssize_t stack_read(struct file *filp, char __user *buf, size_t len, loff_
 
     spin_lock(&stack_spinlock);
     out = head;
-    head = head -> prev;
-    value = out -> value;
+    head = head->prev;
+    value = out->value;
 
     if (copy_to_user(buf, &value, sizeof(T))) {
         return -EFAULT;
@@ -178,8 +178,8 @@ static ssize_t stack_write(struct file *filp,
         return -ENOMEM;
     }
 
-    tmp -> value = value;
-    tmp -> prev = head;
+    tmp->value = value;
+    tmp->prev = head;
 
     head = tmp;
     stack_real_size++;
@@ -210,7 +210,7 @@ static long stack_ioctl(struct file *file, unsigned int cmd, unsigned long arg) 
             Node *old;
             while (offset > 0) {
                 old = head;
-                head = head -> prev;
+                head = head->prev;
                 kfree(old);
                 offset--;
                 stack_real_size--;
@@ -280,7 +280,7 @@ static void __exit stack_exit(void) {
         Node *old;
         while (head) {
             old = head;
-            head = head -> prev;
+            head = head->prev;
             kfree(old);
         }
     }

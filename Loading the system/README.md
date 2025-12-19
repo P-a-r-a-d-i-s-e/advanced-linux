@@ -206,7 +206,7 @@ make -j2 dtbs
 Можно проверить собранное ядро в qemu:
 ```bash
 sudo qemu-system-arm -M vexpress-a9 -m 512M -kernel arm/boot/zImage \
--append "console = ttyAMA0“ -dtb arch/arm/boot/dts/vexpress-v2p-ca9.dtb
+-append "console = ttyAMA0" -dtb arch/arm/boot/dts/vexpress-v2p-ca9.dtb
 ```
 
 ---

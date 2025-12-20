@@ -297,6 +297,9 @@ static struct usb_driver stack_usb_driver = {
 };
 
 static int __init stack_init(void) {
+    //... 
+    //Registration of the driver in the USB subsystem must necessarily take place after the creation of dev_class
+    
     /* Register this driver with the USB subsystem */
     int result;
     result = usb_register(&stack_usb_driver);

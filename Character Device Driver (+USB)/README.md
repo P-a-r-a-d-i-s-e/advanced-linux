@@ -449,4 +449,24 @@ if (stack_real_size >= stack_size) {
 За одно посмотрим что в **/dev** так же появляется наш **int_stack**:
 ![recheck stack](screenshots/recheck_stack.jpg "recheck stack")
 
+Так же, отдельно стоит рассмотреть случай, когда наш USB-накопитель был вставлен до установки модуля, т.е., 
+до ```sudo insmod int_stack.ko```. В этом случае другие модули по типу **uas** и **usb_storage** могут перехватить наш
+USB-накопитель, тогда наш модуль его просто не получит и int_stack не будет создан. Есть несколько способов решить 
+данную проблему, но самый простой это просто в **/etc/modprobe.d/blacklist.conf** добавить пару строк:
+```bash
+# Block access to USB
+blacklist uas
+blacklist usb_storage
+```
+**/etc/modprobe.d/blacklist.conf** это так называемый список блокировки (более подробно можно почитать 
+[*тут*](https://rus-linux.net/MyLDP/hard/Howto-Block-access-to-USB-and-CD-DVD.html "Как блокировать доступ к USB и CD/DVD в Debian и его производных") 
+и [*тут*](https://wiki.debian.org/KernelModuleBlacklisting "Blocking loading of Linux kernel modules")). 
+После добваления в blacklist не забываем перезагрузить систему. Теперь проверим что все работает, даже если USB-накопитель
+был вставлен заранее, т.е., до **insmod**:
+![insmod after usb](screenshots/insmod_after_usb.jpg "insmod after usb")
+
+Стоит отметить ещё один важный момент, ```usb_register(&stack_usb_driver)``` в __init нужно вызывать после того, как наш
+**dev_class** будет создан, иначе метод ```stack_usb_probe``` будет завершаться с ошибкой и мы не увидим наш **int_stack**
+в **/dev**.
+
 Полагаю на этом все, вы всегда можете взять код из этого репозитория, собрать модуль и поиграться самим =)

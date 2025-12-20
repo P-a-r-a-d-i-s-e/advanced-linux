@@ -228,14 +228,6 @@ static long stack_ioctl(struct file *file, unsigned int cmd, unsigned long arg) 
  ** Module Init function
  */
 static int __init stack_init(void) {
-    /* Register this driver with the USB subsystem */
-    int result;
-    result = usb_register(&stack_usb_driver);
-    if (result < 0) {
-        pr_err("usb_register failed for the %s driver. Error number %d\n", stack_usb_driver.name, result);
-        return -1;
-    }
-
     /*Allocating Major number*/
     if ((alloc_chrdev_region(&dev, 0, 1, DEVICE_NAME)) < 0) {
         pr_err("Cannot allocate major number\n");
@@ -256,6 +248,14 @@ static int __init stack_init(void) {
     if (IS_ERR(dev_class = class_create(DEVICE_NAME))) {
         pr_err("Cannot create the struct class\n");
         goto r_class;
+    }
+    
+    /* Register this driver with the USB subsystem */
+    int result;
+    result = usb_register(&stack_usb_driver);
+    if (result < 0) {
+        pr_err("usb_register failed for the %s driver. Error number %d\n", stack_usb_driver.name, result);
+        return -1;
     }
 
     head = NULL;
